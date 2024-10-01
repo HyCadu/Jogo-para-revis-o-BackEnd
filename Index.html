@@ -7,30 +7,32 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f9fafb;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
+            color: #2d3748;
         }
         .game-container {
             max-width: 800px;
             margin: 50px auto;
             padding: 20px;
-            background-color: white;
-            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.15);
+            border-radius: 15px;
         }
         .question {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
             margin-bottom: 20px;
-            color: #2d3748;
+            color: #1a202c;
         }
         .option {
             margin: 10px 0;
             padding: 15px;
             background-color: #edf2f7;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            border: 2px solid transparent;
         }
         .option:hover {
             background-color: #cbd5e0;
@@ -38,10 +40,12 @@
         .correct {
             background-color: #48bb78 !important;
             color: white;
+            border-color: #38a169;
         }
         .wrong {
             background-color: #f56565 !important;
             color: white;
+            border-color: #e53e3e;
         }
         .feedback {
             font-size: 18px;
@@ -58,28 +62,35 @@
             background-color: #f56565;
             color: white;
         }
-        .button-next {
+        .button-next, .button-restart {
             margin-top: 30px;
             padding: 10px 20px;
             background-color: #4299e1;
             color: white;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             display: none;
+        }
+        .counter {
+            font-size: 18px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div class="game-container">
         <h1 class="text-3xl font-bold text-center mb-8 text-blue-600">Jogo de Revisão Spring MVC</h1>
+        <div class="counter" id="counter">Respostas corretas: 0</div>
         <div class="question" id="question">Carregando pergunta...</div>
         <div id="options"></div>
         <div class="feedback" id="feedback"></div>
         <button class="button-next" id="nextBtn" onclick="nextQuestion()">Próxima Pergunta</button>
+        <button class="button-restart" id="restartBtn" onclick="restartGame()">Reiniciar Jogo</button>
     </div>
 
     <script>
         let currentQuestionIndex = 0;
+        let correctAnswers = 0;
 
         const questions = [
             {
@@ -122,6 +133,65 @@
                     "@SpringMapping"
                 ],
                 answer: "@RequestMapping"
+            },{
+                question: "Em uma URL como http://endereco/recurso?parametro1=abc&parametro2=123, o que o caractere ? indica?",
+                options: [
+                    "O início do recurso a ser acessado.",
+                    "O fim da URL do servidor e o início da seção de dados.",
+                    "O final dos parâmetros na URL.",
+                    "A separação entre múltiplos parâmetros."
+                ],
+                answer: "O fim da URL do servidor e o início da seção de dados."
+            },
+            {
+                question: "Como são separados múltiplos parâmetros e valores em uma URL?",
+                options: [
+                    "Por espaços.",
+                    "Pelo símbolo ?.",
+                    "Pelo símbolo &.",
+                    "Pelo símbolo =."
+                ],
+                answer: "Pelo símbolo &."
+            },
+            {
+                question: "Em uma URL como http://endereco/recurso?parametro1=abc&parametro2=123, qual a função do símbolo =?",
+                options: [
+                    "Separar os parâmetros uns dos outros.",
+                    "Indicar o fim da seção de dados.",
+                    "Separar o nome do parâmetro do seu valor.",
+                    "Definir o recurso a ser acessado."
+                ],
+                answer: "Separar o nome do parâmetro do seu valor."
+            },
+            {
+                question: "Qual dos métodos abaixo é comumente utilizado para obter parâmetros de uma URL em uma aplicação Java Servlet?",
+                options: [
+                    "request.getParameter(String nome)",
+                    "response.getParameter(String nome)",
+                    "request.setParameter(String nome)",
+                    "request.getAttribute(String nome)"
+                ],
+                answer: "request.getParameter(String nome)"
+            },
+            {
+                question: "Em uma aplicação web, se você receber a URL http://endereco/recurso?usuario=Joao&idade=25, como você pode obter o valor do parâmetro idade em um Servlet?",
+                options: [
+                    "request.getParameter(Joao)",
+                    "request.getParameter(usuario)",
+                    "request.getParameter(idade)",
+                    "request.getParameter(25)"
+                ],
+                answer: "request.getParameter(idade)"
+            },
+            {
+                question: "O que acontece se você tentar obter o valor de um parâmetro que não está presente na URL?",
+                options: [
+                    "Retorna null.",
+                    "Retorna uma string vazia ''.",
+                    "Gera uma exceção NullPointerException.",
+                    "Retorna false."
+                ],
+                answer: "Retorna null."
             },
             {
                 question: "Em uma aplicação Spring Boot, qual anotação vincula o campo 'nome' a um parâmetro do método?",
@@ -133,6 +203,164 @@
                     "@MappingParam(name = nome) String nome"
                 ],
                 answer: "@RequestParam(name = nome) String nome"
+            },
+            {
+                question: "Qual é a função principal de um Servlet em uma aplicação Java?",
+                options: [
+                    "Criar aplicativos desktop.",
+                    "Gerar páginas de conteúdo dinâmico em uma aplicação web.",
+                    "Processar requisições HTTP de forma síncrona.",
+                    "Manipular diretamente o banco de dados sem interação com o cliente."
+                ],
+                answer: "Gerar páginas de conteúdo dinâmico em uma aplicação web."
+            },
+            {
+                question: "Qual método da classe HttpServlet é utilizado para tratar requisições HTTP GET?",
+                options: [
+                    "doPost",
+                    "service",
+                    "doGet",
+                    "doPut"
+                ],
+                answer: "doGet"
+            },
+            {
+                question: "Qual é o propósito da anotação @WebServlet?",
+                options: [
+                    "Definir o formato da resposta de um servlet.",
+                    "Especificar o nome da aplicação web.",
+                    "Definir e configurar o mapeamento de URLs para um servlet.",
+                    "Configurar parâmetros de inicialização para o servlet."
+                ],
+                answer: "Definir e configurar o mapeamento de URLs para um servlet."
+            },
+            {
+                question: "O que o método response.setContentType('text/html;charset=UTF-8'); faz?",
+                options: [
+                    "Define o tipo de conteúdo da resposta como HTML com codificação UTF-8.",
+                    "Altera o cabeçalho HTTP para permitir requisições de origens cruzadas (CORS).",
+                    "Define a resposta como JSON com codificação UTF-8.",
+                    "Estabelece o conteúdo da requisição do cliente como texto simples."
+                ],
+                answer: "Define o tipo de conteúdo da resposta como HTML com codificação UTF-8."
+            },
+            {
+                question: "No seguinte trecho de código, qual será a saída se o parâmetro nome for igual a 'João'?\n\n```java\nprotected void doGet(HttpServletRequest request, HttpServletResponse response)\n        throws ServletException, IOException {\n    response.setContentType(\"text/html;charset=UTF-8\");\n    PrintWriter out = response.getWriter();\n    out.println(\"olá \" + request.getParameter(\"nome\"));\n}\n```",
+                options: [
+                    "olá João",
+                    "nome",
+                    "Parâmetro indefinido",
+                    "olá"
+                ],
+                answer: "olá João"
+            },{
+                question: "Qual esquema JSP é utilizado para inserir código Java a ser processado no servidor?",
+                options: [
+                    "<%! ... %>",
+                    "<% ... %>",
+                    "<%= ... %>",
+                    "<%-- ... --%>"
+                ],
+                answer: "<% ... %>"
+            },
+            {
+                question: "Qual esquema JSP é utilizado para renderizar o resultado de uma expressão ou variável?",
+                options: [
+                    "<%! ... %>",
+                    "<% ... %>",
+                    "<%= ... %>",
+                    "<%-- ... --%>"
+                ],
+                answer: "<%= ... %>"
+            },
+            {
+                question: "Qual esquema JSP é utilizado para definir declarações de variáveis e métodos da página?",
+                options: [
+                    "<%! ... %>",
+                    "<% ... %>",
+                    "<%= ... %>",
+                    "<%-- ... --%>"
+                ],
+                answer: "<%! ... %>"
+            },
+            {
+                question: "Qual esquema JSP é utilizado para definir um comentário que não será exibido no HTML final?",
+                options: [
+                    "<%! ... %>",
+                    "<% ... %>",
+                    "<%= ... %>",
+                    "<%-- ... --%>"
+                ],
+                answer: "<%-- ... --%>"
+            },
+            {
+                question: "Qual diretiva JSP é utilizada para definir atributos relacionados ao processamento da página?",
+                options: [
+                    "<%@ page ... %>",
+                    "<%@ include ... %>",
+                    "<%@ taglib ... %>",
+                    "<%@ import ... %>"
+                ],
+                answer: "<%@ page ... %>"
+            },
+            {
+                question: "Qual exceção pode ser lançada pelo método doGet?",
+                options: [
+                    "IOException e ServletException",
+                    "FileNotFoundException e SQLException",
+                    "IllegalArgumentException e NullPointerException",
+                    "IndexOutOfBoundsException e ArrayStoreException"
+                ],
+                answer: "IOException e ServletException"
+            },{
+                question: "Qual anotação é utilizada para marcar um controller especializado em trabalhar com aplicações REST?",
+                options: [
+                    "@Controller",
+                    "@RestController",
+                    "@Repository",
+                    "@Service"
+                ],
+                answer: "@RestController"
+            },
+            {
+                question: "Qual anotação indica uma classe responsável por operações com o banco de dados no Spring?",
+                options: [
+                    "@Component",
+                    "@Repository",
+                    "@Service",
+                    "@Autowired"
+                ],
+                answer: "@Repository"
+            },
+            {
+                question: "Qual anotação define um método ou objeto como um bean gerenciado pelo Spring?",
+                options: [
+                    "@Bean",
+                    "@Configuration",
+                    "@Repository",
+                    "@Component"
+                ],
+                answer: "@Bean"
+            },
+            {
+                question: "Qual anotação é usada para injetar dependências em um ponto específico da aplicação?",
+                options: [
+                    "@Service",
+                    "@Autowired",
+                    "@Bean",
+                    "@Component"
+                ],
+                answer: "@Autowired"
+            },
+            {
+                question: "Qual anotação é usada para mapear requisições HTTP para métodos específicos em um controller Spring?",
+                options: [
+                    "@RequestMapping",
+                    "@GetMapping",
+                    "@PostMapping",
+                    "@PutMapping"
+                ],
+                answer: "@RequestMapping"
             }
         ];
 
@@ -144,8 +372,9 @@
         }
 
         function startGame() {
-            // Embaralhar as perguntas no início
             shuffleArray(questions);
+            correctAnswers = 0;
+            updateCounter();
             loadQuestion();
         }
 
@@ -157,13 +386,13 @@
 
             options.forEach(option => {
                 option.classList.remove("correct", "wrong");
-                option.style.pointerEvents = "none"; // Desabilita cliques após resposta
+                option.style.pointerEvents = "none"; 
             });
 
-            // Comparação direta entre a resposta correta e a opção selecionada
             if (selectedOption === correctAnswer) {
                 feedback.textContent = "Correto!";
                 feedback.className = "feedback feedback-correct";
+                correctAnswers++;
                 document.querySelector(`[onclick="checkAnswer('${selectedOption}')"]`).classList.add("correct");
             } else {
                 feedback.textContent = `Errado! A resposta certa é: ${correctAnswer}`;
@@ -173,6 +402,7 @@
 
             feedback.style.display = "block";
             document.getElementById("nextBtn").style.display = "block";
+            updateCounter();
         }
 
         function nextQuestion() {
@@ -185,8 +415,9 @@
             } else {
                 document.getElementById("question").textContent = "Você completou o jogo!";
                 document.getElementById("options").style.display = "none";
-                document.getElementById("feedback").textContent = "Parabéns!";
+                document.getElementById("feedback").textContent = `Parabéns! Você acertou ${correctAnswers} de ${questions.length}.`;
                 document.getElementById("feedback").className = "feedback feedback-correct";
+                document.getElementById("restartBtn").style.display = "block";
             }
         }
 
@@ -201,7 +432,18 @@
             ).join("");
         }
 
-        // Iniciar o jogo embaralhando perguntas
+        function updateCounter() {
+            document.getElementById("counter").textContent = `Respostas corretas: ${correctAnswers}`;
+        }
+
+        function restartGame() {
+            currentQuestionIndex = 0;
+            document.getElementById("options").style.display = "block";
+            document.getElementById("restartBtn").style.display = "none";
+            document.getElementById("feedback").style.display = "none";
+            startGame();
+        }
+
         startGame();
     </script>
 </body>

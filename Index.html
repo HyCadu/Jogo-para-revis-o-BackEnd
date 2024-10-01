@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Revisão Spring MVC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9fafb;
+        }
+        .game-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .question {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+        .option {
+            margin: 10px 0;
+            padding: 15px;
+            background-color: #edf2f7;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .option:hover {
+            background-color: #cbd5e0;
+        }
+        .correct {
+            background-color: #48bb78 !important;
+            color: white;
+        }
+        .wrong {
+            background-color: #f56565 !important;
+            color: white;
+        }
+        .feedback {
+            font-size: 18px;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .feedback-correct {
+            background-color: #48bb78;
+            color: white;
+        }
+        .feedback-wrong {
+            background-color: #f56565;
+            color: white;
+        }
+        .button-next {
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #4299e1;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="text-3xl font-bold text-center mb-8 text-blue-600">Jogo de Revisão Spring MVC</h1>
+        <div class="question" id="question">Carregando pergunta...</div>
+        <div id="options"></div>
+        <div class="feedback" id="feedback"></div>
+        <button class="button-next" id="nextBtn" onclick="nextQuestion()">Próxima Pergunta</button>
+    </div>
+
+    <script>
+        let currentQuestionIndex = 0;
+
+        const questions = [
+            {
+                question: "Utilizando o framework Spring MVC, qual anotação deve ser usada para criar um controller?",
+                options: [
+                    "#Controller",
+                    "&Controller",
+                    "@Controller",
+                    "%Controller"
+                ],
+                answer: "@Controller"
+            },
+            {
+                question: "Qual característica do padrão MVC utilizando Spring Framework?",
+                options: [
+                    "As classes da aplicação devem ter contato com classes da biblioteca.",
+                    "A classe DispatcherServlet é um front controller e estende HttpServlet.",
+                    "O gerenciamento de transações não é nativo do framework, sendo necessário o uso de bibliotecas externas via API.",
+                    "A escalabilidade é maior sem reutilização de código."
+                ],
+                answer: "A classe DispatcherServlet é um front controller e estende HttpServlet."
+            },
+            {
+                question: "Qual anotação no Spring MVC é usada para extrair valores de caminho e passá-los como argumentos?",
+                options: [
+                    "@RequestHeader",
+                    "@RequestParam",
+                    "@ResponseBody",
+                    "@PathVariable"
+                ],
+                answer: "@PathVariable"
+            },
+            {
+                question: "Quanto à arquitetura MVC, escolha a sequência correta de verdadeiro (V) ou falso (F):",
+                options: [
+                    "V - F - F",
+                    "V - V - F",
+                    "F - V - V",
+                    "F - F - V"
+                ],
+                answer: "F - V - V"
+            },
+            {
+                question: "Qual anotação é usada no Spring MVC para receber requisições HTTP em uma URL?",
+                options: [
+                    "@RequestMapping",
+                    "@SendRedirect",
+                    "@RequestDispatcher",
+                    "@TargetRequest",
+                    "@SpringMapping"
+                ],
+                answer: "@RequestMapping"
+            },
+            {
+                question: "Em uma aplicação Spring Boot, qual anotação vincula o campo 'nome' a um parâmetro do método?",
+                options: [
+                    "@ParamName(nome) String nome",
+                    "@RequestParam(name = nome) String nome",
+                    "@PostRequest(nome) String nome",
+                    "@RequestParameter(name = nome) String nome",
+                    "@MappingParam(name = nome) String nome"
+                ],
+                answer: "@RequestParam(name = nome) String nome"
+            }
+        ];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function startGame() {
+            // Embaralhar as perguntas no início
+            shuffleArray(questions);
+            loadQuestion();
+        }
+
+        function checkAnswer(selectedOption) {
+            const currentQuestion = questions[currentQuestionIndex];
+            const correctAnswer = currentQuestion.answer;
+            const feedback = document.getElementById("feedback");
+            const options = document.querySelectorAll(".option");
+
+            options.forEach(option => {
+                option.classList.remove("correct", "wrong");
+                option.style.pointerEvents = "none"; // Desabilita cliques após resposta
+            });
+
+            // Comparação direta entre a resposta correta e a opção selecionada
+            if (selectedOption === correctAnswer) {
+                feedback.textContent = "Correto!";
+                feedback.className = "feedback feedback-correct";
+                document.querySelector(`[onclick="checkAnswer('${selectedOption}')"]`).classList.add("correct");
+            } else {
+                feedback.textContent = `Errado! A resposta certa é: ${correctAnswer}`;
+                feedback.className = "feedback feedback-wrong";
+                document.querySelector(`[onclick="checkAnswer('${selectedOption}')"]`).classList.add("wrong");
+            }
+
+            feedback.style.display = "block";
+            document.getElementById("nextBtn").style.display = "block";
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+                document.getElementById("feedback").style.display = "none";
+                document.getElementById("nextBtn").style.display = "none";
+            } else {
+                document.getElementById("question").textContent = "Você completou o jogo!";
+                document.getElementById("options").style.display = "none";
+                document.getElementById("feedback").textContent = "Parabéns!";
+                document.getElementById("feedback").className = "feedback feedback-correct";
+            }
+        }
+
+        function loadQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            const questionEl = document.getElementById("question");
+            const optionsEl = document.getElementById("options");
+
+            questionEl.textContent = `Pergunta: ${currentQuestion.question}`;
+            optionsEl.innerHTML = currentQuestion.options.map(
+                (option, index) => `<div class="option" onclick="checkAnswer('${option.replace(/"/g, '&quot;')}')">${String.fromCharCode(97 + index)}) ${option}</div>`
+            ).join("");
+        }
+
+        // Iniciar o jogo embaralhando perguntas
+        startGame();
+    </script>
+</body>
+</html>

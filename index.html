@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jogo de Revisão Spring MVC</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -19,73 +19,29 @@
             box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.15);
             border-radius: 15px;
         }
-        .question {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #1a202c;
-        }
-        .option {
-            margin: 10px 0;
-            padding: 15px;
-            background-color: #edf2f7;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            border: 2px solid transparent;
-        }
         .option:hover {
-            background-color: #cbd5e0;
+            background-color: #d9d9d9;
+            cursor: pointer;
         }
         .correct {
-            background-color: #48bb78 !important;
+            background-color: #28a745 !important;
             color: white;
-            border-color: #38a169;
         }
         .wrong {
-            background-color: #f56565 !important;
+            background-color: #dc3545 !important;
             color: white;
-            border-color: #e53e3e;
-        }
-        .feedback {
-            font-size: 18px;
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            display: none;
-        }
-        .feedback-correct {
-            background-color: #48bb78;
-            color: white;
-        }
-        .feedback-wrong {
-            background-color: #f56565;
-            color: white;
-        }
-        .button-next, .button-restart {
-            margin-top: 30px;
-            padding: 10px 20px;
-            background-color: #4299e1;
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-            display: none;
-        }
-        .counter {
-            font-size: 18px;
-            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1 class="text-3xl font-bold text-center mb-8 text-blue-600">Jogo de Revisão Spring MVC</h1>
-        <div class="counter" id="counter">Respostas corretas: 0</div>
-        <div class="question" id="question">Carregando pergunta...</div>
-        <div id="options"></div>
-        <div class="feedback" id="feedback"></div>
-        <button class="button-next" id="nextBtn" onclick="nextQuestion()">Próxima Pergunta</button>
-        <button class="button-restart" id="restartBtn" onclick="restartGame()">Reiniciar Jogo</button>
+    <div class="game-container text-center p-4">
+        <h1 class="mb-4 text-primary">Jogo de Revisão Spring MVC</h1>
+        <div id="counter" class="mb-3">Respostas corretas: 0</div>
+        <div id="question" class="h5 mb-4">Carregando pergunta...</div>
+        <div id="options" class="mb-3"></div>
+        <div id="feedback" class="alert" style="display: none;"></div>
+        <button id="nextBtn" class="btn btn-primary" style="display: none;" onclick="nextQuestion()">Próxima Pergunta</button>
+        <button id="restartBtn" class="btn btn-secondary" style="display: none;" onclick="restartGame()">Reiniciar Jogo</button>
     </div>
 
     <script>
@@ -93,276 +49,275 @@
         let correctAnswers = 0;
 
         const questions = [
-            {
-                question: "Utilizando o framework Spring MVC, qual anotação deve ser usada para criar um controller?",
-                options: [
-                    "#Controller",
-                    "&Controller",
-                    "@Controller",
-                    "%Controller"
-                ],
-                answer: "@Controller"
-            },
-            {
-                question: "Qual característica do padrão MVC utilizando Spring Framework?",
-                options: [
-                    "As classes da aplicação devem ter contato com classes da biblioteca.",
-                    "A classe DispatcherServlet é um front controller e estende HttpServlet.",
-                    "O gerenciamento de transações não é nativo do framework, sendo necessário o uso de bibliotecas externas via API.",
-                    "A escalabilidade é maior sem reutilização de código."
-                ],
-                answer: "A classe DispatcherServlet é um front controller e estende HttpServlet."
-            },
-            {
-                question: "Qual anotação no Spring MVC é usada para extrair valores de caminho e passá-los como argumentos?",
-                options: [
-                    "@RequestHeader",
-                    "@RequestParam",
-                    "@ResponseBody",
-                    "@PathVariable"
-                ],
-                answer: "@PathVariable"
-            },
-            {
-                question: "Qual anotação é usada no Spring MVC para receber requisições HTTP em uma URL?",
-                options: [
-                    "@RequestMapping",
-                    "@SendRedirect",
-                    "@RequestDispatcher",
-                    "@TargetRequest",
-                    "@SpringMapping"
-                ],
-                answer: "@RequestMapping"
-            },{
-                question: "Em uma URL como http://endereco/recurso?parametro1=abc&parametro2=123, o que o caractere ? indica?",
-                options: [
-                    "O início do recurso a ser acessado.",
-                    "O fim da URL do servidor e o início da seção de dados.",
-                    "O final dos parâmetros na URL.",
-                    "A separação entre múltiplos parâmetros."
-                ],
-                answer: "O fim da URL do servidor e o início da seção de dados."
-            },
-            {
-                question: "Como são separados múltiplos parâmetros e valores em uma URL?",
-                options: [
-                    "Por espaços.",
-                    "Pelo símbolo ?.",
-                    "Pelo símbolo &.",
-                    "Pelo símbolo =."
-                ],
-                answer: "Pelo símbolo &."
-            },
-            {
-                question: "Em uma URL como http://endereco/recurso?parametro1=abc&parametro2=123, qual a função do símbolo =?",
-                options: [
-                    "Separar os parâmetros uns dos outros.",
-                    "Indicar o fim da seção de dados.",
-                    "Separar o nome do parâmetro do seu valor.",
-                    "Definir o recurso a ser acessado."
-                ],
-                answer: "Separar o nome do parâmetro do seu valor."
-            },
-            {
-                question: "Qual dos métodos abaixo é comumente utilizado para obter parâmetros de uma URL em uma aplicação Java Servlet?",
-                options: [
-                    "request.getParameter(String nome)",
-                    "response.getParameter(String nome)",
-                    "request.setParameter(String nome)",
-                    "request.getAttribute(String nome)"
-                ],
-                answer: "request.getParameter(String nome)"
-            },
-            {
-                question: "Em uma aplicação web, se você receber a URL http://endereco/recurso?usuario=Joao&idade=25, como você pode obter o valor do parâmetro idade em um Servlet?",
-                options: [
-                    "request.getParameter(Joao)",
-                    "request.getParameter(usuario)",
-                    "request.getParameter(idade)",
-                    "request.getParameter(25)"
-                ],
-                answer: "request.getParameter(idade)"
-            },
-            {
-                question: "O que acontece se você tentar obter o valor de um parâmetro que não está presente na URL?",
-                options: [
-                    "Retorna null.",
-                    "Retorna uma string vazia ''.",
-                    "Gera uma exceção NullPointerException.",
-                    "Retorna false."
-                ],
-                answer: "Retorna null."
-            },
-            {
-                question: "Em uma aplicação Spring Boot, qual anotação vincula o campo 'nome' a um parâmetro do método?",
-                options: [
-                    "@ParamName(nome) String nome",
-                    "@RequestParam(name = nome) String nome",
-                    "@PostRequest(nome) String nome",
-                    "@RequestParameter(name = nome) String nome",
-                    "@MappingParam(name = nome) String nome"
-                ],
-                answer: "@RequestParam(name = nome) String nome"
-            },
-            {
-                question: "Qual é a função principal de um Servlet em uma aplicação Java?",
-                options: [
-                    "Criar aplicativos desktop.",
-                    "Gerar páginas de conteúdo dinâmico em uma aplicação web.",
-                    "Processar requisições HTTP de forma síncrona.",
-                    "Manipular diretamente o banco de dados sem interação com o cliente."
-                ],
-                answer: "Gerar páginas de conteúdo dinâmico em uma aplicação web."
-            },
-            {
-                question: "Qual método da classe HttpServlet é utilizado para tratar requisições HTTP GET?",
-                options: [
-                    "doPost",
-                    "service",
-                    "doGet",
-                    "doPut"
-                ],
-                answer: "doGet"
-            },
-            {
-                question: "Qual é o propósito da anotação @WebServlet?",
-                options: [
-                    "Definir o formato da resposta de um servlet.",
-                    "Especificar o nome da aplicação web.",
-                    "Definir e configurar o mapeamento de URLs para um servlet.",
-                    "Configurar parâmetros de inicialização para o servlet."
-                ],
-                answer: "Definir e configurar o mapeamento de URLs para um servlet."
-            },
-            {
-                question: "O que o método response.setContentType('text/html;charset=UTF-8'); faz?",
-                options: [
-                    "Define o tipo de conteúdo da resposta como HTML com codificação UTF-8.",
-                    "Altera o cabeçalho HTTP para permitir requisições de origens cruzadas (CORS).",
-                    "Define a resposta como JSON com codificação UTF-8.",
-                    "Estabelece o conteúdo da requisição do cliente como texto simples."
-                ],
-                answer: "Define o tipo de conteúdo da resposta como HTML com codificação UTF-8."
-            },
-            {
-                question: "No seguinte trecho de código, qual será a saída se o parâmetro nome for igual a 'João'?\n\n```java\nprotected void doGet(HttpServletRequest request, HttpServletResponse response)\n        throws ServletException, IOException {\n    response.setContentType(\"text/html;charset=UTF-8\");\n    PrintWriter out = response.getWriter();\n    out.println(\"olá \" + request.getParameter(\"nome\"));\n}\n```",
-                options: [
-                    "olá João",
-                    "nome",
-                    "Parâmetro indefinido",
-                    "olá"
-                ],
-                answer: "olá João"
-            },{
-                question: "Qual esquema JSP é utilizado para inserir código Java a ser processado no servidor?",
-                options: [
-                    "<%! ... %>",
-                    "<% ... %>",
-                    "<%= ... %>",
-                    "<%-- ... --%>"
-                ],
-                answer: "<% ... %>"
-            },
-            {
-                question: "Qual esquema JSP é utilizado para renderizar o resultado de uma expressão ou variável?",
-                options: [
-                    "<%! ... %>",
-                    "<% ... %>",
-                    "<%= ... %>",
-                    "<%-- ... --%>"
-                ],
-                answer: "<%= ... %>"
-            },
-            {
-                question: "Qual esquema JSP é utilizado para definir declarações de variáveis e métodos da página?",
-                options: [
-                    "<%! ... %>",
-                    "<% ... %>",
-                    "<%= ... %>",
-                    "<%-- ... --%>"
-                ],
-                answer: "<%! ... %>"
-            },
-            {
-                question: "Qual esquema JSP é utilizado para definir um comentário que não será exibido no HTML final?",
-                options: [
-                    "<%! ... %>",
-                    "<% ... %>",
-                    "<%= ... %>",
-                    "<%-- ... --%>"
-                ],
-                answer: "<%-- ... --%>"
-            },
-            {
-                question: "Qual diretiva JSP é utilizada para definir atributos relacionados ao processamento da página?",
-                options: [
-                    "<%@ page ... %>",
-                    "<%@ include ... %>",
-                    "<%@ taglib ... %>",
-                    "<%@ import ... %>"
-                ],
-                answer: "<%@ page ... %>"
-            },
-            {
-                question: "Qual exceção pode ser lançada pelo método doGet?",
-                options: [
-                    "IOException e ServletException",
-                    "FileNotFoundException e SQLException",
-                    "IllegalArgumentException e NullPointerException",
-                    "IndexOutOfBoundsException e ArrayStoreException"
-                ],
-                answer: "IOException e ServletException"
-            },{
-                question: "Qual anotação é utilizada para marcar um controller especializado em trabalhar com aplicações REST?",
-                options: [
-                    "@Controller",
-                    "@RestController",
-                    "@Repository",
-                    "@Service"
-                ],
-                answer: "@RestController"
-            },
-            {
-                question: "Qual anotação indica uma classe responsável por operações com o banco de dados no Spring?",
-                options: [
-                    "@Component",
-                    "@Repository",
-                    "@Service",
-                    "@Autowired"
-                ],
-                answer: "@Repository"
-            },
-            {
-                question: "Qual anotação define um método ou objeto como um bean gerenciado pelo Spring?",
-                options: [
-                    "@Bean",
-                    "@Configuration",
-                    "@Repository",
-                    "@Component"
-                ],
-                answer: "@Bean"
-            },
-            {
-                question: "Qual anotação é usada para injetar dependências em um ponto específico da aplicação?",
-                options: [
-                    "@Service",
-                    "@Autowired",
-                    "@Bean",
-                    "@Component"
-                ],
-                answer: "@Autowired"
-            },
-            {
-                question: "Qual anotação é usada para mapear requisições HTTP para métodos específicos em um controller Spring?",
-                options: [
-                    "@RequestMapping",
-                    "@GetMapping",
-                    "@PostMapping",
-                    "@PutMapping"
-                ],
-                answer: "@RequestMapping"
-            }
-        ];
+        {
+            question: "Utilizando o framework Spring MVC, qual anotação deve ser usada para criar um controller?",
+            options: [
+                "#Controller",
+                "&Controller",
+                "@Controller",
+                "%Controller"
+            ],
+            answer: "@Controller"
+        },
+        {
+            question: "Qual característica do padrão MVC utilizando Spring Framework?",
+            options: [
+                "As classes da aplicação devem ter contato com classes da biblioteca.",
+                "A classe DispatcherServlet é um front controller e estende HttpServlet.",
+                "O gerenciamento de transações não é nativo do framework, sendo necessário o uso de bibliotecas externas via API.",
+                "A escalabilidade é maior sem reutilização de código."
+            ],
+            answer: "A classe DispatcherServlet é um front controller e estende HttpServlet."
+        },
+        {
+            question: "Qual anotação no Spring MVC é usada para extrair valores de caminho e passá-los como argumentos?",
+            options: [
+                "@RequestHeader",
+                "@RequestParam",
+                "@ResponseBody",
+                "@PathVariable"
+            ],
+            answer: "@PathVariable"
+        },
+        {
+            question: "Qual anotação é usada no Spring MVC para receber requisições HTTP em uma URL?",
+            options: [
+                "@RequestMapping",
+                "@SendRedirect",
+                "@RequestDispatcher",
+                "@TargetRequest",
+                "@SpringMapping"
+            ],
+            answer: "@RequestMapping"
+        },{
+            question: "Em uma URL como http://endereco/recurso?parametro1=abc&parametro2=123, o que o caractere ? indica?",
+            options: [
+                "O início do recurso a ser acessado.",
+                "O fim da URL do servidor e o início da seção de dados.",
+                "O final dos parâmetros na URL.",
+                "A separação entre múltiplos parâmetros."
+            ],
+            answer: "O fim da URL do servidor e o início da seção de dados."
+        },
+        {
+            question: "Como são separados múltiplos parâmetros e valores em uma URL?",
+            options: [
+                "Por espaços.",
+                "Pelo símbolo ?.",
+                "Pelo símbolo &.",
+                "Pelo símbolo =."
+            ],
+            answer: "Pelo símbolo &."
+        },
+        {
+            question: "Em uma URL como http://endereco/recurso?parametro1=abc&parametro2=123, qual a função do símbolo =?",
+            options: [
+                "Separar os parâmetros uns dos outros.",
+                "Indicar o fim da seção de dados.",
+                "Separar o nome do parâmetro do seu valor.",
+                "Definir o recurso a ser acessado."
+            ],
+            answer: "Separar o nome do parâmetro do seu valor."
+        },
+        {
+            question: "Qual dos métodos abaixo é comumente utilizado para obter parâmetros de uma URL em uma aplicação Java Servlet?",
+            options: [
+                "request.getParameter(String nome)",
+                "response.getParameter(String nome)",
+                "request.setParameter(String nome)",
+                "request.getAttribute(String nome)"
+            ],
+            answer: "request.getParameter(String nome)"
+        },
+        {
+            question: "Em uma aplicação web, se você receber a URL http://endereco/recurso?usuario=Joao&idade=25, como você pode obter o valor do parâmetro idade em um Servlet?",
+            options: [
+                "request.getParameter(Joao)",
+                "request.getParameter(usuario)",
+                "request.getParameter(idade)",
+                "request.getParameter(25)"
+            ],
+            answer: "request.getParameter(idade)"
+        },
+        {
+            question: "O que acontece se você tentar obter o valor de um parâmetro que não está presente na URL?",
+            options: [
+                "Retorna null.",
+                "Retorna uma string vazia ''.",
+                "Gera uma exceção NullPointerException.",
+                "Retorna false."
+            ],
+            answer: "Retorna null."
+        },
+        {
+            question: "Em uma aplicação Spring Boot, qual anotação vincula o campo 'nome' a um parâmetro do método?",
+            options: [
+                "@ParamName(nome) String nome",
+                "@RequestParam(name = nome) String nome",
+                "@PostRequest(nome) String nome",
+                "@RequestParameter(name = nome) String nome",
+                "@MappingParam(name = nome) String nome"
+            ],
+            answer: "@RequestParam(name = nome) String nome"
+        },
+        {
+            question: "Qual é a função principal de um Servlet em uma aplicação Java?",
+            options: [
+                "Criar aplicativos desktop.",
+                "Gerar páginas de conteúdo dinâmico em uma aplicação web.",
+                "Processar requisições HTTP de forma síncrona.",
+                "Manipular diretamente o banco de dados sem interação com o cliente."
+            ],
+            answer: "Gerar páginas de conteúdo dinâmico em uma aplicação web."
+        },
+        {
+            question: "Qual método da classe HttpServlet é utilizado para tratar requisições HTTP GET?",
+            options: [
+                "doPost",
+                "service",
+                "doGet",
+                "doPut"
+            ],
+            answer: "doGet"
+        },
+        {
+            question: "Qual é o propósito da anotação @WebServlet?",
+            options: [
+                "Definir o formato da resposta de um servlet.",
+                "Especificar o nome da aplicação web.",
+                "Definir e configurar o mapeamento de URLs para um servlet.",
+                "Configurar parâmetros de inicialização para o servlet."
+            ],
+            answer: "Definir e configurar o mapeamento de URLs para um servlet."
+        },
+        {
+            question: "O que o método response.setContentType('text/html;charset=UTF-8'); faz?",
+            options: [
+                "Define o tipo de conteúdo da resposta como HTML com codificação UTF-8.",
+                "Altera o cabeçalho HTTP para permitir requisições de origens cruzadas (CORS).",
+                "Define a resposta como JSON com codificação UTF-8.",
+                "Estabelece o conteúdo da requisição do cliente como texto simples."
+            ],
+            answer: "Define o tipo de conteúdo da resposta como HTML com codificação UTF-8."
+        },
+        {
+            question: "No seguinte trecho de código, qual será a saída se o parâmetro nome for igual a 'João'?\n\n```java\nprotected void doGet(HttpServletRequest request, HttpServletResponse response)\n        throws ServletException, IOException {\n    response.setContentType(\"text/html;charset=UTF-8\");\n    PrintWriter out = response.getWriter();\n    out.println(\"olá \" + request.getParameter(\"nome\"));\n}\n```",
+            options: [
+                "olá João",
+                "nome",
+                "Parâmetro indefinido",
+                "olá"
+            ],
+            answer: "olá João"
+        },{
+            question: "Qual esquema JSP é utilizado para inserir código Java a ser processado no servidor?",
+            options: [
+                "<%! ... %>",
+                "<% ... %>",
+                "<%= ... %>",
+                "<%-- ... --%>"
+            ],
+            answer: "<% ... %>"
+        },
+        {
+            question: "Qual esquema JSP é utilizado para renderizar o resultado de uma expressão ou variável?",
+            options: [
+                "<%! ... %>",
+                "<% ... %>",
+                "<%= ... %>",
+                "<%-- ... --%>"
+            ],
+            answer: "<%= ... %>"
+        },
+        {
+            question: "Qual esquema JSP é utilizado para definir declarações de variáveis e métodos da página?",
+            options: [
+                "<%! ... %>",
+                "<% ... %>",
+                "<%= ... %>",
+                "<%-- ... --%>"
+            ],
+            answer: "<%! ... %>"
+        },
+        {
+            question: "Qual esquema JSP é utilizado para definir um comentário que não será exibido no HTML final?",
+            options: [
+                "<%! ... %>",
+                "<% ... %>",
+                "<%= ... %>",
+                "<%-- ... --%>"
+            ],
+            answer: "<%-- ... --%>"
+        },
+        {
+            question: "Qual diretiva JSP é utilizada para definir atributos relacionados ao processamento da página?",
+            options: [
+                "<%@ page ... %>",
+                "<%@ include ... %>",
+                "<%@ taglib ... %>",
+                "<%@ import ... %>"
+            ],
+            answer: "<%@ page ... %>"
+        },
+        {
+            question: "Qual exceção pode ser lançada pelo método doGet?",
+            options: [
+                "IOException e ServletException",
+                "FileNotFoundException e SQLException",
+                "IllegalArgumentException e NullPointerException",
+                "IndexOutOfBoundsException e ArrayStoreException"
+            ],
+            answer: "IOException e ServletException"
+        },{
+            question: "Qual anotação é utilizada para marcar um controller especializado em trabalhar com aplicações REST?",
+            options: [
+                "@Controller",
+                "@RestController",
+                "@Repository",
+                "@Service"
+            ],
+            answer: "@RestController"
+        },
+        {
+            question: "Qual anotação indica uma classe responsável por operações com o banco de dados no Spring?",
+            options: [
+                "@Component",
+                "@Repository",
+                "@Service",
+                "@Autowired"
+            ],
+            answer: "@Repository"
+        },
+        {
+            question: "Qual anotação define um método ou objeto como um bean gerenciado pelo Spring?",
+            options: [
+                "@Bean",
+                "@Configuration",
+                "@Repository",
+                "@Component"
+            ],
+            answer: "@Bean"
+        },
+        {
+            question: "Qual anotação é usada para injetar dependências em um ponto específico da aplicação?",
+            options: [
+                "@Service",
+                "@Autowired",
+                "@Bean",
+                "@Component"
+            ],
+            answer: "@Autowired"
+        },
+        {
+            question: "Qual anotação é usada para mapear requisições HTTP para métodos específicos em um controller Spring?",
+            options: [
+                "@RequestMapping",
+                "@GetMapping",
+                "@PostMapping",
+                "@PutMapping"
+            ],
+            answer: "@RequestMapping"
+        }]
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -384,19 +339,16 @@
             const feedback = document.getElementById("feedback");
             const options = document.querySelectorAll(".option");
 
-            options.forEach(option => {
-                option.classList.remove("correct", "wrong");
-                option.style.pointerEvents = "none"; 
-            });
+            options.forEach(option => option.style.pointerEvents = "none");
 
             if (selectedOption === correctAnswer) {
                 feedback.textContent = "Correto!";
-                feedback.className = "feedback feedback-correct";
+                feedback.className = "alert alert-success";
                 correctAnswers++;
                 document.querySelector(`[onclick="checkAnswer('${selectedOption}')"]`).classList.add("correct");
             } else {
                 feedback.textContent = `Errado! A resposta certa é: ${correctAnswer}`;
-                feedback.className = "feedback feedback-wrong";
+                feedback.className = "alert alert-danger";
                 document.querySelector(`[onclick="checkAnswer('${selectedOption}')"]`).classList.add("wrong");
             }
 
@@ -407,7 +359,6 @@
 
         function nextQuestion() {
             currentQuestionIndex++;
-
             if (currentQuestionIndex < questions.length) {
                 loadQuestion();
                 document.getElementById("feedback").style.display = "none";
@@ -416,7 +367,7 @@
                 document.getElementById("question").textContent = "Você completou o jogo!";
                 document.getElementById("options").style.display = "none";
                 document.getElementById("feedback").textContent = `Parabéns! Você acertou ${correctAnswers} de ${questions.length}.`;
-                document.getElementById("feedback").className = "feedback feedback-correct";
+                document.getElementById("feedback").className = "alert alert-success";
                 document.getElementById("restartBtn").style.display = "block";
             }
         }
@@ -426,9 +377,9 @@
             const questionEl = document.getElementById("question");
             const optionsEl = document.getElementById("options");
 
-            questionEl.textContent = `Pergunta: ${currentQuestion.question}`;
+            questionEl.textContent = currentQuestion.question;
             optionsEl.innerHTML = currentQuestion.options.map(
-                (option, index) => `<div class="option" onclick="checkAnswer('${option.replace(/"/g, '&quot;')}')">${String.fromCharCode(97 + index)}) ${option}</div>`
+                (option, index) => `<div class="option border p-2 rounded my-2" onclick="checkAnswer('${option.replace(/"/g, '&quot;')}')">${String.fromCharCode(97 + index)}) ${option}</div>`
             ).join("");
         }
 
@@ -446,5 +397,6 @@
 
         startGame();
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
